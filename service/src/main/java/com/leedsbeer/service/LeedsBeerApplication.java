@@ -37,8 +37,8 @@ public class LeedsBeerApplication {
         Flyway flyway = Flyway.configure()
                 .createSchemas(true)
                 .schemas("BEER")
-                .dataSource(properties.jdbcUrl(), "root", "password")
-                .locations("classpath:db/migration")
+                .dataSource(properties.jdbcUrl(), properties.dbFlywayUsername(), properties.dbFlywayPassword())
+                .locations(properties.flywayMigrationLocations())
                 .load();
         flyway.migrate();
     }

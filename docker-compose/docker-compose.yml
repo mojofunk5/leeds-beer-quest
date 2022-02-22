@@ -8,6 +8,8 @@ services:
     restart: always
     environment:
       DB_JDBC_URL: 'jdbc:mariadb://db:3306/'
+      DB_FLYWAY_USERNAME: 'root'
+      DB_FLYWAY_PASSWORD: 'password'
     ports:
       - "8080:8080"
   db:
