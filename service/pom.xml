@@ -41,6 +41,17 @@
                 </executions>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/docker-template</directory>
+                <filtering>true</filtering>
+                <targetPath>${build.directory}</targetPath>
+            </resource>
+        </resources>
     </build>
 
     <dependencies>
@@ -110,17 +121,5 @@
             <version>2.1.210</version>
             <scope>test</scope>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.apache.derby</groupId>-->
-        <!--            <artifactId>derby</artifactId>-->
-        <!--            <version>10.15.2.0</version>-->
-        <!--            <scope>test</scope>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.apache.derby</groupId>-->
-        <!--            <artifactId>derbytools</artifactId>-->
-        <!--            <version>10.15.2.0</version>-->
-        <!--            <scope>test</scope>-->
-        <!--        </dependency>-->
     </dependencies>
 </project>
