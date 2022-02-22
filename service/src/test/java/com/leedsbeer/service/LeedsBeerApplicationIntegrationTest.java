@@ -23,12 +23,15 @@ public class LeedsBeerApplicationIntegrationTest {
 
     @BeforeClass
     public static void beforeClass() {
-        System.setProperty(PROPERTY_SERVICE_PORT, RANDOM_PORT);
-        System.setProperty(PROPERTY_DB_FLYWAY_MIGRATION_LOCATIONS, "classpath:db/migration/common,classpath:db/migration/h2");
-        System.setProperty(PROPERTY_DB_JDBC_URL, "jdbc:h2:mem:BEER;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:db/migration/test/init_tests.sql';");
-        System.setProperty(PROPERTY_DB_FLYWAY_USERNAME, "root");
-        System.setProperty(PROPERTY_DB_FLYWAY_PASSWORD, "password");
-        application = LeedsBeerApplication.start();
+        LeedsBeerApplicationProperties properties = someProperties()
+                .with(PROPERTY_SERVICE_PORT, RANDOM_PORT)
+                .with(PROPERTY_DB_FLYWAY_MIGRATION_LOCATIONS, "classpath:db/migration/common,classpath:db/migration/h2")
+                .with(PROPERTY_DB_JDBC_URL, "jdbc:h2:mem:BEER;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:db/migration/test/init_tests.sql';")
+                .with(PROPERTY_DB_FLYWAY_USERNAME, "root")
+                .with(PROPERTY_DB_FLYWAY_PASSWORD, "password")
+                .build();
+
+        application = LeedsBeerApplication.start(properties);
     }
 
     @AfterClass

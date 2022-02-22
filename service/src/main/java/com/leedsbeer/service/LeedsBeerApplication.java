@@ -5,12 +5,14 @@ import org.flywaydb.core.Flyway;
 
 import java.util.Map;
 
+import static com.leedsbeer.service.LeedsBeerApplicationProperties.someProperties;
+
 public class LeedsBeerApplication {
 
     private final Javalin javalin;
 
     public static void main(String[] args) {
-        start();
+        start(someProperties().build());
     }
 
     private LeedsBeerApplication(LeedsBeerApplicationProperties properties) {
@@ -20,8 +22,7 @@ public class LeedsBeerApplication {
         javalin.start(properties.servicePort());
     }
 
-    static LeedsBeerApplication start() {
-        LeedsBeerApplicationProperties properties = new LeedsBeerApplicationProperties();
+    static LeedsBeerApplication start(LeedsBeerApplicationProperties properties) {
         return new LeedsBeerApplication(properties);
     }
 
