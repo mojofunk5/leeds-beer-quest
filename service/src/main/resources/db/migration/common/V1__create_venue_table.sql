@@ -1,4 +1,5 @@
 CREATE TABLE VENUE (
+id integer NOT NULL AUTO_INCREMENT PRIMARY KEY,
 name varchar(255),
 category varchar(255),
 url varchar(255),

@@ -1,7 +1,6 @@
 package com.leedsbeer.service;
 
 import io.javalin.Javalin;
-import org.flywaydb.core.Flyway;
 
 import java.util.Map;
 
@@ -35,12 +34,7 @@ public class LeedsBeerApplication {
     }
 
     private void upgradeDatabase(LeedsBeerApplicationProperties properties) {
-        Flyway flyway = Flyway.configure()
-                .createSchemas(true)
-                .schemas("BEER")
-                .dataSource(properties.jdbcUrl(), properties.dbFlywayUsername(), properties.dbFlywayPassword())
-                .locations(properties.flywayMigrationLocations())
-                .load();
-        flyway.migrate();
+        DatabaseMigration databaseMigration = new DatabaseMigration(properties);
+        databaseMigration.migrate();
     }
 }
