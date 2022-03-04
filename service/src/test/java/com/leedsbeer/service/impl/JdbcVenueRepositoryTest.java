@@ -5,8 +5,6 @@ import com.leedsbeer.service.LeedsBeerApplicationProperties;
 import com.leedsbeer.service.domain.Ratings;
 import com.leedsbeer.service.domain.Venue;
 import com.leedsbeer.service.domain.VenueRepository;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -19,7 +17,7 @@ import static com.leedsbeer.service.LeedsBeerApplicationProperties.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class JdbcVenueRepositoryIntegrationTest {
+public class JdbcVenueRepositoryTest {
 
     private static LeedsBeerApplicationProperties properties;
 
@@ -40,7 +38,7 @@ public class JdbcVenueRepositoryIntegrationTest {
 
     @Before
     public void before() {
-        DataSource dataSource = createDataSource();
+        DataSource dataSource = DataSourceFactory.create(properties);
         this.repository = new JdbcVenueRepository(dataSource);
     }
 
@@ -76,13 +74,5 @@ public class JdbcVenueRepositoryIntegrationTest {
         assertThat(ratings.getAmenities(), is(3.0));
         assertThat(ratings.getAtmosphere(), is(3.0));
         assertThat(ratings.getValue(), is(3.0));
-    }
-
-    private DataSource createDataSource() {
-        HikariConfig configuration = new HikariConfig();
-        configuration.setJdbcUrl("jdbc:h2:mem:BEER");
-        configuration.setUsername("BEER_SERVICE");
-        configuration.setPassword("abc");
-        return new HikariDataSource(configuration);
     }
 }

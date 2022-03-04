@@ -1,9 +1,13 @@
 package com.leedsbeer.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.leedsbeer.service.http.ObjectMapperFactory;
+import com.leedsbeer.service.http.VenueDto;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -19,10 +23,15 @@ public class LeedsBeerApplicationIntegrationTest {
 
     public static final String RANDOM_PORT = "0";
 
+    private static ObjectMapper objectMapper;
     private static LeedsBeerApplication application;
+    private static OkHttpClient httpClient;
 
     @BeforeClass
     public static void beforeClass() {
+        objectMapper = ObjectMapperFactory.create();
+        httpClient = new OkHttpClient.Builder().build();
+
         LeedsBeerApplicationProperties properties = someProperties()
                 .with(PROPERTY_SERVICE_PORT, RANDOM_PORT)
                 .with(PROPERTY_DB_FLYWAY_MIGRATION_LOCATIONS, "classpath:db/migration/common,classpath:db/migration/h2")
@@ -37,14 +46,20 @@ public class LeedsBeerApplicationIntegrationTest {
     @AfterClass
     public static void afterClass() {
         application.stop();
+        httpClient.dispatcher().executorService().shutdown();
     }
 
     @Test
-    public void canGetOkResponseFromHelloWorldEndpoint() throws IOException {
-        OkHttpClient httpClient = new OkHttpClient.Builder().build();
-        Call call = httpClient.newCall(httpGetRequest("hello"));
+    public void canRetrieveVenueById() throws IOException {
+        int id = RandomUtils.nextInt(1, 242);
+
+        Call call = httpClient.newCall(httpGetRequest("venue/" + id));
         Response response = call.execute();
+
         assertThat(response.code(), is(200));
+
+        VenueDto venue = objectMapper.readValue(response.body().string(), VenueDto.class);
+        assertThat(venue.getId(), is(id));
     }
 
     @Test

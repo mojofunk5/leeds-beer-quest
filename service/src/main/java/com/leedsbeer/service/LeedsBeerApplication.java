@@ -1,8 +1,13 @@
 package com.leedsbeer.service;
 
+import com.leedsbeer.service.domain.VenueRepository;
+import com.leedsbeer.service.http.JavalinFactory;
+import com.leedsbeer.service.http.VenueEndpoint;
+import com.leedsbeer.service.impl.DataSourceFactory;
+import com.leedsbeer.service.impl.JdbcVenueRepository;
 import io.javalin.Javalin;
 
-import java.util.Map;
+import javax.sql.DataSource;
 
 import static com.leedsbeer.service.LeedsBeerApplicationProperties.someProperties;
 
@@ -16,8 +21,12 @@ public class LeedsBeerApplication {
 
     private LeedsBeerApplication(LeedsBeerApplicationProperties properties) {
         upgradeDatabase(properties);
-        javalin = Javalin.create();
-        javalin.get("hello", ctx -> ctx.json(Map.of("hello", "world")));
+
+        DataSource dataSource = DataSourceFactory.create(properties);
+        VenueRepository venueRepository = new JdbcVenueRepository(dataSource);
+
+        javalin = JavalinFactory.create();
+        VenueEndpoint.createAndRegister(javalin, venueRepository);
         javalin.start(properties.servicePort());
     }
 
