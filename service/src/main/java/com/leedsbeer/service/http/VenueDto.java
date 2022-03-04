@@ -3,6 +3,7 @@ package com.leedsbeer.service.http;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.leedsbeer.service.domain.Venue;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -114,7 +115,7 @@ public class VenueDto {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("id", id)
                 .append("name", name)
                 .append("category", category)

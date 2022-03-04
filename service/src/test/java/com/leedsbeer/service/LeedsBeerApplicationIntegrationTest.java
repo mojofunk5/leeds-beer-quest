@@ -3,6 +3,7 @@ package com.leedsbeer.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.leedsbeer.service.http.ObjectMapperFactory;
 import com.leedsbeer.service.http.VenueDto;
+import com.leedsbeer.service.impl.DataSourceFactory;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -12,8 +13,12 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import static com.leedsbeer.service.LeedsBeerApplicationProperties.*;
 import static org.hamcrest.CoreMatchers.is;
@@ -24,20 +29,25 @@ public class LeedsBeerApplicationIntegrationTest {
     public static final String RANDOM_PORT = "0";
 
     private static ObjectMapper objectMapper;
-    private static LeedsBeerApplication application;
     private static OkHttpClient httpClient;
+
+    private static LeedsBeerApplicationProperties properties;
+    private static LeedsBeerApplication application;
 
     @BeforeClass
     public static void beforeClass() {
         objectMapper = ObjectMapperFactory.create();
         httpClient = new OkHttpClient.Builder().build();
 
-        LeedsBeerApplicationProperties properties = someProperties()
+        properties = someProperties()
                 .with(PROPERTY_SERVICE_PORT, RANDOM_PORT)
                 .with(PROPERTY_DB_FLYWAY_MIGRATION_LOCATIONS, "classpath:db/migration/common,classpath:db/migration/h2")
-                .with(PROPERTY_DB_JDBC_URL, "jdbc:h2:mem:BEER;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:db/migration/test/init_tests.sql';")
+                .with(PROPERTY_DB_FLYWAY_JDBC_URL, "jdbc:h2:mem:BEER;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:db/migration/test/init_tests.sql';")
                 .with(PROPERTY_DB_FLYWAY_USERNAME, "root")
                 .with(PROPERTY_DB_FLYWAY_PASSWORD, "password")
+                .with(PROPERTY_DB_SERVICE_JDBC_URL, "jdbc:h2:mem:BEER;")
+                .with(PROPERTY_DB_SERVICE_USERNAME, "BEER_SERVICE")
+                .with(PROPERTY_DB_SERVICE_PASSWORD, "abc")
                 .build();
 
         application = LeedsBeerApplication.start(properties);
@@ -64,7 +74,8 @@ public class LeedsBeerApplicationIntegrationTest {
 
     @Test
     public void flywayScriptsAreRunSuccessfully() throws SQLException {
-        try (Connection connection = DriverManager.getConnection("jdbc:h2:mem:BEER", "BEER_SERVICE", "abc")) {
+        DataSource dataSource = DataSourceFactory.create(properties);
+        try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT COUNT(*) FROM BEER.VENUE")) {
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     resultSet.next();

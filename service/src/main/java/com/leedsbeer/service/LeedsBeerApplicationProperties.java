@@ -7,9 +7,12 @@ public class LeedsBeerApplicationProperties {
 
     public static final String PROPERTY_SERVICE_PORT = "SERVICE_PORT";
     public static final String PROPERTY_DB_FLYWAY_MIGRATION_LOCATIONS = "DB_FLYWAY_MIGRATION_LOCATIONS";
-    public static final String PROPERTY_DB_JDBC_URL = "DB_JDBC_URL";
+    public static final String PROPERTY_DB_FLYWAY_JDBC_URL = "DB_FLYWAY_JDBC_URL";
     public static final String PROPERTY_DB_FLYWAY_USERNAME = "DB_FLYWAY_USERNAME";
     public static final String PROPERTY_DB_FLYWAY_PASSWORD = "DB_FLYWAY_PASSWORD";
+    public static final String PROPERTY_DB_SERVICE_JDBC_URL = "DB_SERVICE_JDBC_URL";
+    public static final String PROPERTY_DB_SERVICE_USERNAME = "DB_SERVICE_USERNAME";
+    public static final String PROPERTY_DB_SERVICE_PASSWORD = "DB_SERVICE_PASSWORD";
 
     private final Map<String, String> properties;
 
@@ -31,8 +34,8 @@ public class LeedsBeerApplicationProperties {
         return value.split(",");
     }
 
-    public String jdbcUrl() {
-        return getMandatoryStringProperty(PROPERTY_DB_JDBC_URL);
+    public String flywayJdbcUrl() {
+        return getMandatoryStringProperty(PROPERTY_DB_FLYWAY_JDBC_URL);
     }
 
     public String dbFlywayUsername() {
@@ -41,6 +44,18 @@ public class LeedsBeerApplicationProperties {
 
     public String dbFlywayPassword() {
         return getMandatoryStringProperty(PROPERTY_DB_FLYWAY_PASSWORD);
+    }
+
+    public String serviceJdbcUrl() {
+        return getMandatoryStringProperty(PROPERTY_DB_SERVICE_JDBC_URL);
+    }
+
+    public String dbServiceUsername() {
+        return getMandatoryStringProperty(PROPERTY_DB_SERVICE_USERNAME);
+    }
+
+    public String dbServicePassword() {
+        return getMandatoryStringProperty(PROPERTY_DB_SERVICE_PASSWORD);
     }
 
     private int getIntProperty(String key, int defaultValue) {

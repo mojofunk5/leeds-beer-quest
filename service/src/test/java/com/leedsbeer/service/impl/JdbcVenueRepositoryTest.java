@@ -27,9 +27,12 @@ public class JdbcVenueRepositoryTest {
     public static void beforeClass() {
         properties = someProperties()
                 .with(PROPERTY_DB_FLYWAY_MIGRATION_LOCATIONS, "classpath:db/migration/common,classpath:db/migration/h2")
-                .with(PROPERTY_DB_JDBC_URL, "jdbc:h2:mem:BEER;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:db/migration/test/init_tests.sql';")
+                .with(PROPERTY_DB_FLYWAY_JDBC_URL, "jdbc:h2:mem:BEER;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:db/migration/test/init_tests.sql';")
                 .with(PROPERTY_DB_FLYWAY_USERNAME, "root")
                 .with(PROPERTY_DB_FLYWAY_PASSWORD, "password")
+                .with(PROPERTY_DB_SERVICE_JDBC_URL, "jdbc:h2:mem:BEER;")
+                .with(PROPERTY_DB_SERVICE_USERNAME, "BEER_SERVICE")
+                .with(PROPERTY_DB_SERVICE_PASSWORD, "abc")
                 .build();
 
         DatabaseMigration databaseMigration = new DatabaseMigration(properties);

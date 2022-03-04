@@ -14,9 +14,9 @@ public class DataSourceFactory {
 
     public static DataSource create(LeedsBeerApplicationProperties properties) {
         HikariConfig configuration = new HikariConfig();
-        configuration.setJdbcUrl("jdbc:h2:mem:BEER");
-        configuration.setUsername("BEER_SERVICE");
-        configuration.setPassword("abc");
+        configuration.setJdbcUrl(properties.serviceJdbcUrl());
+        configuration.setUsername(properties.dbServiceUsername());
+        configuration.setPassword(properties.dbServicePassword());
         return new HikariDataSource(configuration);
     }
 }

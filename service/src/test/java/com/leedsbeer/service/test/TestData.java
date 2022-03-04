@@ -17,7 +17,7 @@ public class TestData {
         super();
     }
 
-    public static Venue aRandomVenue() {
+    public static Venue.Builder aRandomVenueBuilder() {
         return aVenue()
                 .id(RandomUtils.nextInt(0, 100_000))
                 .name(randomAlphanumeric(10))
@@ -32,8 +32,11 @@ public class TestData {
                 .phone(randomNumeric(12))
                 .twitterHandle(randomNumeric(12))
                 .ratings(someRandomRatings())
-                .tags(randomAlphanumeric(5), randomAlphanumeric(6))
-                .build();
+                .tags(randomAlphanumeric(5), randomAlphanumeric(6));
+    }
+
+    public static Venue aRandomVenue() {
+        return aRandomVenueBuilder().build();
     }
 
     public static Ratings someRandomRatings() {

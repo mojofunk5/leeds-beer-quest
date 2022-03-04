@@ -10,7 +10,7 @@ public class DatabaseMigration {
         this.flyway = Flyway.configure()
                 .createSchemas(true)
                 .schemas("BEER")
-                .dataSource(properties.jdbcUrl(), properties.dbFlywayUsername(), properties.dbFlywayPassword())
+                .dataSource(properties.flywayJdbcUrl(), properties.dbFlywayUsername(), properties.dbFlywayPassword())
                 .locations(properties.flywayMigrationLocations())
                 .load();
     }

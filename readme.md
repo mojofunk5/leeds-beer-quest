@@ -9,7 +9,7 @@ Initially I've got:
 * A python script to convert the initial CSV dataset into a series of SQL inserts
 * Those SQL scripts in a folder which can then be run by a Java tool called flyway which maintains a record of migrations run and will automatically upgrade the database as required
 * Two simple integration tests that:
-  - validate the application server starts and a simple hello world end point can be invoked and return an OK response
+  - an implementation of a http endpoint to retrieve the details for a venue given it's id. It will behave sensibly if the id doesn't exist or an internal server error occurs
   - validates the flyway migration scripts have been run, the schema is present and the initial dataset has been loaded
 * Docker build file for the application server and a docker compose file to run the application server and a mariadb instance
 
@@ -59,13 +59,73 @@ Once that has built then run docker compose:
 
 This will start both the database and application containers and once the database is up the application will connect and run the flyway migration scripts (if required) and then Javalin on port `8080`.
 
-To validate it's working then try calling the hello world endpoint in another terminal:
+To validate it's working then try calling querying for one of the venues in another terminal:
 
 ```
-$ curl localhost:8080/hello
-{"hello":"world"}
+$ curl localhost:8080/venue/101 | jq .
+{
+  "id": 101,
+  "name": "Oporto",
+  "category": "Bar reviews",
+  "url": "http://leedsbeer.info/?p=993",
+  "timestamp": "2013-02-05T20:11:03Z",
+  "excerpt": "A music (and hot dog) venue on the Call Lane strip. Nice amenities, but just so-so beer. ",
+  "thumbnail": "http://leedsbeer.info/wp-content/uploads/2013/02/20130204_184152.jpg",
+  "latitude": 53.7956581,
+  "longitude": -1.5408245,
+  "address": "33 Call Lane, Leeds LS1 7BT",
+  "phone": "0113 245 4444",
+  "twitterHandle": "Oportobar",
+  "ratings": {
+    "beer": 2,
+    "atmosphere": 2,
+    "amenities": 3,
+    "value": 1.5
+  },
+  "tags": [
+    "food",
+    "free wifi",
+    "live music",
+    "sofas"
+  ]
+}
 ```
 
-## Next steps
+In the example above the output has been piped to `jq` to format it nicely.
 
-In the next session to build on this I would flesh out the application part to implement the API probably presenting the same interface as the original. 
+With the initial data set the ids range from 1 -> 242. An example when an invalid id is used:
+
+```
+$ curl localhost:8080/venue/260 -v    
+*   Trying ::1:8080...
+* Connected to localhost (::1) port 8080 (#0)
+> GET /venue/260 HTTP/1.1
+> Host: localhost:8080
+> User-Agent: curl/7.77.0
+> Accept: */*
+> 
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 404 Not Found
+< Date: Fri, 04 Mar 2022 12:52:51 GMT
+< Content-Type: text/plain
+< Content-Length: 0
+< 
+* Connection #0 to host localhost left intact
+```
+
+## Things to note in the application
+
+I've done a bit more work on the application after being asked to flesh it out a bit more. 
+
+Things of note:
+
+* As it's been TDD'd coverage is fairly high and added the JaCoCo plugin to ensure the build fails if the measure of complexity covered drops below 90% (see pom file)
+* Have used a hexagonal (ports and adapters) type architecture which is fairly simple in this example
+* The http endpoint only needs to interact with the repository and nothing else
+* The repository is an interface so we could replace the database with an inmemory representation based off the csv file or whatever
+* The http endpoint contains no business logic, it's only concern is mapping to domain objects and back and reporting the correct http codes
+* The repository implementation is tested against an inmemory database as that's the best way to ensure the SQL is valid, etc
+* Using an ORM such as hibernate felt like overkill for this application and so it's simple JDBC
+* Having different representations for the dtos and domain might feel like overkill but allows different APIs to be created easily, e.g. could expose it over a messaging layer, etc
+* The unit test for the endpoint uses a mock repository to decouple it from requiring a database
+* The integration test for retrieving venues by id simply tests the happy path as the variations and detail about mapping fields are covered in the relevant unit tests 

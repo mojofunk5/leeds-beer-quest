@@ -3,6 +3,7 @@ package com.leedsbeer.service.http;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.leedsbeer.service.domain.Ratings;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class RatingsDto {
 
@@ -41,7 +42,7 @@ public class RatingsDto {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("beer", beer)
                 .append("atmosphere", atmosphere)
                 .append("amenities", amenities)

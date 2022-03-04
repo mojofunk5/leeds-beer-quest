@@ -7,9 +7,12 @@ services:
       dockerfile: ../service/target/Dockerfile
     restart: always
     environment:
-      DB_JDBC_URL: 'jdbc:mariadb://db:3306/'
+      DB_FLYWAY_JDBC_URL: 'jdbc:mariadb://db:3306/'
       DB_FLYWAY_USERNAME: 'root'
       DB_FLYWAY_PASSWORD: 'password'
+      DB_SERVICE_JDBC_URL: 'jdbc:mariadb://db:3306/'
+      DB_SERVICE_USERNAME: 'BEER_SERVICE'
+      DB_SERVICE_PASSWORD: 'def'      
     ports:
       - "8080:8080"
   db:
