@@ -5,6 +5,7 @@ import com.leedsbeer.service.domain.VenueRepository;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpCode;
+import io.javalin.plugin.openapi.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +26,17 @@ public class VenueEndpoint {
         new VenueEndpoint(javalin, venueRepository);
     }
 
+    @OpenApi(
+            path = "/venue/{id}",
+            method = HttpMethod.GET,
+            pathParams = {
+                    @OpenApiParam(name = "id", description = "The id of the venue to retrieve")
+            },
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = VenueDto.class)),
+                    @OpenApiResponse(status = "404", description = "No venue with the specified id exists")
+            }
+    )
     public void get(Context context) {
         int id = context.pathParamAsClass("id", Integer.class).get();
 

@@ -129,3 +129,12 @@ Things of note:
 * Having different representations for the dtos and domain might feel like overkill but allows different APIs to be created easily, e.g. could expose it over a messaging layer, etc
 * The unit test for the endpoint uses a mock repository to decouple it from requiring a database
 * The integration test for retrieving venues by id simply tests the happy path as the variations and detail about mapping fields are covered in the relevant unit tests 
+* Have added swagger documentation for the endpoint
+
+## Swagger Documentation
+
+Javalin comes with an OpenApi module which makes it fairly trivial to add swagger documentation that will stay in sync with the code and enable integration with the api.
+
+To view the documentation when it is running browse to [http://localhost:8080/swagger-ui](http://localhost:8080/swagger-ui). To view the underlying open api spec it can be found at [http://localhost:8080/swagger-docs](http://localhost:8080/swagger-docs).
+
+![Swagger documentation](images/swagger-ui.png)
