@@ -129,7 +129,9 @@ Things of note:
 * Having different representations for the dtos and domain might feel like overkill but allows different APIs to be created easily, e.g. could expose it over a messaging layer, etc
 * The unit test for the endpoint uses a mock repository to decouple it from requiring a database
 * The integration test for retrieving venues by id simply tests the happy path as the variations and detail about mapping fields are covered in the relevant unit tests 
-* Have added swagger documentation for the endpoint
+* Have used the builder pattern in the domain for the [`Venue`](service/src/main/java/com/leedsbeer/service/domain/Venue.java) and [`Ratings`](service/src/main/java/com/leedsbeer/service/domain/Ratings.java) objects. This enforces the user must supply the mandatory fields and is a fluent api reducing the risk of setting parameters in the wrong order which would be easily done by transposing fields when invoking a constructor. It also has the advantage it doesn't breach static code analysis rules about having to many parameters to a constructor as only the builder is passed.
+* Allows use of the [test data pattern](service/src/test/java/com/leedsbeer/service/test/TestData.java) for easy creation of test data. 
+* Have added swagger documentation for the endpoint (see section below)
 
 ## Swagger Documentation
 
