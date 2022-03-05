@@ -132,6 +132,7 @@ Things of note:
 * Have used the builder pattern in the domain for the [`Venue`](service/src/main/java/com/leedsbeer/service/domain/Venue.java) and [`Ratings`](service/src/main/java/com/leedsbeer/service/domain/Ratings.java) objects. This enforces the user must supply the mandatory fields and is a fluent api reducing the risk of setting parameters in the wrong order which would be easily done by transposing fields when invoking a constructor. It also has the advantage it doesn't breach static code analysis rules about having to many parameters to a constructor as only the builder is passed.
 * Allows use of the [test data pattern](service/src/test/java/com/leedsbeer/service/test/TestData.java) for easy creation of test data. 
 * Have added swagger documentation for the endpoint (see section below)
+* I've added a new tool I came across called error prone (see section below)
 
 ## Swagger Documentation
 
@@ -140,3 +141,53 @@ Javalin comes with an OpenApi module which makes it fairly trivial to add swagge
 To view the documentation when it is running browse to [http://localhost:8080/swagger-ui](http://localhost:8080/swagger-ui). To view the underlying open api spec it can be found at [http://localhost:8080/swagger-docs](http://localhost:8080/swagger-docs).
 
 ![Swagger documentation](images/swagger-ui.png)
+
+## Error Prone
+
+I recently came across a project from Google called [Error Prone](https://errorprone.info/index). It adds a number of checks when compiling code and will fail the build if they fail. 
+
+It is hooked into the standard maven build by adding a plugin to the compiler. 
+
+When I added it the build passed as normal. To verify that it was working I added some code to one of the classes that I knew would fail one of the checks. In this case it was the check that the same variable had been checked multiple times for null, which is most likely a copy and paste error. 
+
+The code I added was this:
+
+```java
+	String bob = null;
+
+	if (bob == null && bob == null) {
+	    throw new IllegalStateException();
+	}
+```
+
+When running maven the build did indeed fail with a compilation error and an indication of which rule had failed:
+
+```
+[INFO] --- maven-compiler-plugin:3.10.0:compile (default-compile) @ leedsbeer-service ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 14 source files to /Users/andystewart/projects/source/leeds-beer/service/target/classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /Users/andystewart/projects/source/leeds-beer/service/src/main/java/com/leedsbeer/service/domain/Ratings.java:[44,25] [IdentityBinaryExpression] A binary expression where both operands are the same is usually incorrect; the value of this expression is equivalent to `bob == null`.
+    (see https://errorprone.info/bugpattern/IdentityBinaryExpression)
+[INFO] 1 error
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  1.517 s
+[INFO] Finished at: 2022-03-05T15:00:37Z
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.10.0:compile (default-compile) on project leedsbeer-service: Compilation failure
+[ERROR] /Users/andystewart/projects/source/leeds-beer/service/src/main/java/com/leedsbeer/service/domain/Ratings.java:[44,25] [IdentityBinaryExpression] A binary expression where both operands are the same is usually incorrect; the value of this expression is equivalent to `bob == null`.
+[ERROR]     (see https://errorprone.info/bugpattern/IdentityBinaryExpression)
+[ERROR] 
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+```
