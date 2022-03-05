@@ -1,6 +1,6 @@
 # Leeds Beer Quest
 
-For the the first part of the challenge I've focused on the infrastructure parts required to build, host and run the various parts of the application. 
+For the the first part of the challenge I've focused on the infrastructure parts required to build, host and run the various parts of the application. I've subsequently fleshed out the application to show how a RESTful call to retrieve a venue by it's id would search the database and return the result.
 
 Initially I've got:
 
@@ -59,7 +59,7 @@ Once that has built then run docker compose:
 
 This will start both the database and application containers and once the database is up the application will connect and run the flyway migration scripts (if required) and then Javalin on port `8080`.
 
-To validate it's working then try calling querying for one of the venues in another terminal:
+To validate it's working query for one of the venues in another terminal:
 
 ```
 $ curl localhost:8080/venue/101 | jq .
